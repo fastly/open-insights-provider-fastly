@@ -16,15 +16,14 @@ describe("FastlyProvider", (): void => {
   let providerFixture: Provider;
 
   beforeEach((): void => {
-    providerFixture = new Provider(settingsFixture) as Provider;
+    providerFixture = new Provider(settingsFixture);
     providerFixture.setSessionConfig(configFixture);
     fetchMock.resetMocks();
   });
 
   describe("shouldRun", (): void => {
     it("should always run", () => {
-      const result = new Provider(settingsFixture);
-      expect(result.shouldRun()).toBeTruthy();
+      expect(providerFixture.shouldRun()).toBeTruthy();
     });
   });
 
@@ -37,6 +36,7 @@ describe("FastlyProvider", (): void => {
       });
       const provider = new Provider(settingsFixture);
       return provider.fetchSessionConfig().then((result) => {
+        expect(fetchMock.mock.calls[0][0]).toEqual(settingsFixture.config_url);
         expect(result).toEqual(configFixture);
       });
     });
@@ -60,7 +60,7 @@ describe("FastlyProvider", (): void => {
     mockRandomForEach([0.5]);
     it("should expand session config to tasks", (): void => {
       const result = providerFixture.expandTasks();
-      expect(result).toHaveLength(3);
+      expect(result).toHaveLength(configFixture.tasks.length);
       expect(result[0]).toBeInstanceOf(Fetch);
     });
   });

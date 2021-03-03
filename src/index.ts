@@ -1,5 +1,5 @@
 import {
-  Provider as ProviderBase,
+  Provider,
   Fetch,
   Executable,
   KnownErrors,
@@ -30,7 +30,7 @@ interface ResourceCache {
 /**
  * An OpenInsights provider for Fastly Insights.
  */
-class FastlyProvider extends ProviderBase<Config, TaskData> {
+class FastlyProvider extends Provider<Config, TaskData> {
   private _configUrl: string;
   private _libraryVersion: string;
   private _resourceCache: ResourceCache = {};
@@ -43,7 +43,6 @@ class FastlyProvider extends ProviderBase<Config, TaskData> {
    * @param settings Settings to configure the provider
    */
   constructor(settings: Settings) {
-    // Call the ProviderBase constructor passing it the name of this provider.
     super("fastly");
     this._configUrl = DEFAULT_CONFIG_URL;
     this._libraryVersion = LIBRARY_VERSION;

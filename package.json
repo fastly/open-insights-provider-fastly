@@ -8,7 +8,7 @@
     "dist/**/*"
   ],
   "scripts": {
-    "test": "npm run test:once && npm run lint",
+    "test": "npm run lint && npm run test:once",
     "test:once": "jest --coverage",
     "test:watch": "jest --watch",
     "build": "tsc --build tsconfig.json",
