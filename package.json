@@ -21,8 +21,8 @@
     "lint": "tsc && eslint --fix src"
   },
   "dependencies": {
-    "@fastly/performance-observer-polyfill": "^2.0.0-pre-1.3",
-    "@openinsights/openinsights": "^0.2.0",
+    "@fastly/performance-observer-polyfill": "^2.0.0",
+    "@openinsights/openinsights": "^0.2.1",
     "unfetch": "^4.1.0"
   },
   "devDependencies": {
