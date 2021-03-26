@@ -26,11 +26,11 @@ export interface Host {
 }
 
 export interface Settings {
-  max_tasks: number;
-  report_errors: boolean;
-  sample_rate: number;
+  max_tasks?: number;
+  report_errors?: boolean;
+  sample_rate?: number;
   token: string;
-  config_url: string;
+  config_url?: string;
   library_version?: string;
 }
 

@@ -20,7 +20,12 @@ import { templateResource } from "./lib/templateResource";
 import { getClientInfo } from "./lib/clientInfo";
 import prefixKeys from "./util/prefixKeys";
 
-import { DEFAULT_CONFIG_URL, LIBRARY_VERSION } from "./constants";
+import {
+  DEFAULT_CONFIG_URL,
+  DEFAULT_MAX_TASKS,
+  LIBRARY_VERSION,
+  DEFAULT_SAMPLE_RATE,
+} from "./constants";
 import retry from "./util/promiseRetry";
 
 interface ResourceCache {
@@ -33,6 +38,8 @@ interface ResourceCache {
 class FastlyProvider extends Provider<Config, TaskData> {
   private _configUrl: string;
   private _libraryVersion: string;
+  private _maxTasks: number;
+  private _sampleRate: number;
   private _resourceCache: ResourceCache = {};
 
   /**
@@ -44,8 +51,15 @@ class FastlyProvider extends Provider<Config, TaskData> {
    */
   constructor(settings: Settings) {
     super("fastly");
-    this._configUrl = DEFAULT_CONFIG_URL;
+
+    this._configUrl = DEFAULT_CONFIG_URL + settings.token;
     this._libraryVersion = LIBRARY_VERSION;
+    this._maxTasks = settings.max_tasks
+      ? settings.max_tasks
+      : DEFAULT_MAX_TASKS;
+    this._sampleRate = settings.sample_rate
+      ? settings.sample_rate
+      : DEFAULT_SAMPLE_RATE;
 
     if (settings.config_url && settings.config_url !== "") {
       this._configUrl = settings.config_url;
@@ -58,10 +72,13 @@ class FastlyProvider extends Provider<Config, TaskData> {
 
   /**
    * A hook called during initialisation, to determine whether the provider
-   * should participate in the session. We currently set this to be always true,
-   * however may eventually derive the answer from configuraiton settings.
+   * should participate in the session. Currently used to enforce the sample
+   * rate if one is provided via settings and is a valid float between 0 & 1.
    */
   shouldRun(): boolean {
+    if (this._sampleRate > 0 && this._sampleRate < 1) {
+      return this._sampleRate > Math.random();
+    }
     return true;
   }
 
@@ -89,14 +106,10 @@ class FastlyProvider extends Provider<Config, TaskData> {
    *      framework can run them.
    */
   expandTasks(): Executable[] {
-    const {
-      client,
-      settings: { max_tasks: maxTasks },
-      tasks,
-    } = this.sessionConfig;
+    const { client, tasks } = this.sessionConfig;
 
     const possibleTasks = filterTasksByClientClassification(tasks, client);
-    const selectedTasks = chooseRandomTasks(possibleTasks, maxTasks);
+    const selectedTasks = chooseRandomTasks(possibleTasks, this._maxTasks);
     const hydratedTasks = selectedTasks.map(
       (taskData): Fetch<TaskData> =>
         new Fetch<TaskData>(this, { ...this.sessionConfig, ...taskData })
