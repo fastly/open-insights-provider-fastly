@@ -17,8 +17,11 @@
     "test": "npm run lint && npm run test:once",
     "test:once": "jest --coverage",
     "test:watch": "jest --watch",
+    "prebuild": "rimraf dist tsconfig.tsbuildinfo",
     "build": "tsc --build tsconfig.json",
-    "lint": "tsc && eslint --fix src"
+    "lint": "tsc && eslint --fix src",
+    "prepublishOnly": "npm run build && npm run version",
+    "version": "sed -i 's/__buildVersion__/'$npm_package_version'/' dist/constants.js"
   },
   "dependencies": {
     "@fastly/performance-observer-polyfill": "^2.0.0",
