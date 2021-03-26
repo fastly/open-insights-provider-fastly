@@ -8,6 +8,7 @@ import * as template from "./lib/templateResource";
 import configFixture from "./fixtures/config";
 import clientInfoFixture from "./fixtures/clientInfo";
 import entryFixture from "./fixtures/entry";
+import { DEFAULT_CONFIG_URL } from "./constants";
 
 const settingsFixture = configFixture.settings;
 const taskFixture = configFixture.tasks[1];
@@ -21,9 +22,42 @@ describe("FastlyProvider", (): void => {
     fetchMock.resetMocks();
   });
 
+  describe("constructor", (): void => {
+    beforeEach((): void => {
+      fetchMock.mockResponseOnce(JSON.stringify(configFixture), {
+        headers: {
+          "access-control-allow-origin": "*",
+        },
+      });
+    });
+
+    it("should set _config_url to default using the provided token", () => {
+      return providerFixture.fetchSessionConfig().then(() => {
+        expect(fetchMock.mock.calls[0][0]).toEqual(
+          DEFAULT_CONFIG_URL + settingsFixture.token
+        );
+      });
+    });
+
+    it("should override config_url if provided", () => {
+      const settings = Object.assign({}, settingsFixture, {
+        config_url: "https://test.fastly-insights.com/api/v1/config",
+      });
+      const fixture = new Provider(settings);
+      return fixture.fetchSessionConfig().then(() => {
+        expect(fetchMock.mock.calls[0][0]).toEqual(settings.config_url);
+      });
+    });
+  });
+
   describe("shouldRun", (): void => {
-    it("should always run", () => {
-      expect(providerFixture.shouldRun()).toBeTruthy();
+    mockRandomForEach([0.5]);
+    it("should use sample_rate to determine whether session should be run", () => {
+      const settings = Object.assign({}, settingsFixture, {
+        sample_rate: 0.75,
+      });
+      const fixture = new Provider(settings);
+      expect(fixture.shouldRun()).toBeTruthy();
     });
   });
 
@@ -36,7 +70,9 @@ describe("FastlyProvider", (): void => {
       });
       const provider = new Provider(settingsFixture);
       return provider.fetchSessionConfig().then((result) => {
-        expect(fetchMock.mock.calls[0][0]).toEqual(settingsFixture.config_url);
+        expect(fetchMock.mock.calls[0][0]).toEqual(
+          DEFAULT_CONFIG_URL + settingsFixture.token
+        );
         expect(result).toEqual(configFixture);
       });
     });

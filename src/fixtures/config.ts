@@ -12,8 +12,6 @@ const configFixture: Config = {
   },
   // AKA the "config" object --------------------------
   settings: {
-    config_url:
-      "https://fastly-insights.com/api/config/d00fe9b6-91c6-4434-8e77-14630e263a26",
     max_tasks: 20,
     report_errors: false,
     sample_rate: 0.4,
