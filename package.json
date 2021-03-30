@@ -1,6 +1,6 @@
 {
   "name": "@fastly/open-insights-provider-fastly",
-  "version": "0.1.2",
+  "version": "1.0.0",
   "description": "An Open Insights provider for Fastly",
   "repository": "git@github.com:fastly/open-insights-provider-fastly.git",
   "license": "MIT",
