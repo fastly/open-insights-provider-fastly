@@ -32,6 +32,9 @@ export default [
     loadEventEnd: 329.6650000047521,
     type: "reload",
     redirectCount: 0,
+    toJSON: function (): any {
+      return this;
+    },
   },
   {
     name: "https://fonts.googleapis.com/css?family=Raleway:700",

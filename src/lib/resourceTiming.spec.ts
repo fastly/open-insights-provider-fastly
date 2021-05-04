@@ -1,15 +1,8 @@
-import { cloneEntry, removeEntryProps, normalizeEntry } from "./resourceTiming";
+import { removeEntryProps, normalizeEntry } from "./resourceTiming";
 import { ResourceTimingEntry } from "@openinsights/openinsights";
 import entriesFixture from "../fixtures/entries";
 
 describe("Resource timing", (): void => {
-  describe("#cloneEntry", (): void => {
-    it("should return a clone of the entry", (): void => {
-      const fixture = (entriesFixture[0] as any) as ResourceTimingEntry;
-      expect(cloneEntry(fixture)).not.toEqual(fixture);
-    });
-  });
-
   describe("#removeEntryProps", (): void => {
     it("should return a new object", (): void => {
       const [fixture] = (entriesFixture as any) as ResourceTimingEntry[];
@@ -29,6 +22,7 @@ describe("Resource timing", (): void => {
       const result = normalizeEntry(fixture);
       expect(result).not.toHaveProperty("name");
       expect(result).not.toHaveProperty("entryType");
+      expect(result).not.toHaveProperty("toJSON");
       expect(result).not.toHaveProperty("entry_type");
     });
 
