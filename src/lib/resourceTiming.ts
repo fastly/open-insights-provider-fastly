@@ -3,15 +3,12 @@ import { ResourceTimingEntry } from "@openinsights/openinsights";
 import compose from "../util/compose";
 import camelCaseToSnakeCase from "../util/camelCaseToSnakeCase";
 
-const EXCLUDED_PROPS = ["name", "initiatorType", "entryType"];
+const EXCLUDED_PROPS = ["name", "initiatorType", "entryType", "toJSON"];
 
 function cloneEntry(entry: ResourceTimingEntry): ResourceTimingEntry {
   const result: ResourceTimingEntry = {};
   for (const key in entry) {
-    const type = typeof entry[key];
-    if (type === "number" || type === "string") {
-      result[key] = entry[key];
-    }
+    result[key] = entry[key];
   }
   return result;
 }
